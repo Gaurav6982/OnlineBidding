@@ -1,0 +1,78 @@
+
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+@import url('https://fonts.googleapis.com/css2?family=Rubik+Beastly&display=swap');
+body{
+  font-family: 'Roboto', sans-serif;
+}
+* {
+  margin: 0;
+  padding: 0;
+}
+.card{
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+.card2{
+    border-radius: 10px;
+    background-color: white;
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 18px 50px -10px;
+}
+.card-img{
+    width: 100%;
+}
+.big-btns{
+    /* border: 2px solid black; */
+    display: flex;
+    flex-direction: column;
+    margin: 10px 20px;
+}
+.big-btns a{
+    padding:10px
+}
+.form-group{
+    margin: 10px 0;
+}
+.dash-icon{
+    font-size: 40px;
+}
+.text-disabled{
+    opacity: 0.5;
+}
+ul{
+	margin:0;
+	padding:0 !important;
+}
+ul li{
+    text-decoration: none;
+    list-style: none;
+}
+.card-img img{
+    width: 100%;
+}
+i {
+  margin-right: 10px;
+}
+.carousel-item{
+    height: 500px;
+    
+}
+.features-head{
+    font-family: 'Rubik Beastly', cursive;
+}
+.features-tab{
+    padding: 20px 30px;
+    border-radius: 10px;
+    margin: 10px 0;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+    /* box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset; */
+}
+.owl-carousel{
+    /* border: 2px solid black; */
+    height: 500px;
+    overflow: hidden;
+}
+.logo{
+    width: 100px;
+    height:100%;
+    /* border: 2px solid black; */
+}
+/*----------bootstrap-navbar-css------------*/
