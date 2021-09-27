@@ -32,7 +32,18 @@ $(function(){
       var $this = $(this), finalDate = $(this).data('countdown');
       $this.countdown(finalDate, function(event) {
          $this.html(event.strftime('%D days %H:%M:%S hrs'))}).on('finish.countdown', function() {
-            alert("Finish"); 
+	           $.ajax({
+					url:"AuctionControllerServlet",
+					type:"GET",
+					data:{
+						"page":"set_auctions_closed",
+					},
+					error:function(err){
+						console.log(err);
+					},
+					
+				});
+				location.reload();
           });
      });
  });

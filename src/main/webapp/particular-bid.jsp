@@ -26,6 +26,12 @@ if(request.getSession().getAttribute("user")==null)
                     
                 </div>
                 <div class="card2 mx-2 p-4 w-100">
+                	<p class="text-center text-danger">
+                		<%=request.getAttribute("error-msg")==null?"":request.getAttribute("error-msg") %>
+                	</p>
+                	<p class="text-center text-success">
+                		<%=request.getAttribute("success-msg")==null?"":request.getAttribute("success-msg") %>
+                	</p>
                     <p>
                         <span class="fw-bold">Auction For ${item_name}</span>
                     </p>
@@ -47,14 +53,17 @@ if(request.getSession().getAttribute("user")==null)
                         <span>Rs. ${top_bidding_amount }</span>
                     </p>
                     </c:if>
+                    <c:if test="${auction.is_active}">
                     <div class="form-bid">
                         <div class="row">
                             <div class="col-md-8 offset-md-2">
-                                <form action="">
+                                <form action="BidControllerServlet" method="POST">
+                                	<input type="hidden" name="command" value="place_a_bid">
+                                	<input type="hidden" name="auction" value="${auction.id }">
                                     <div class="row">
                                         <div class="col-md-3 py-1">Enter Amount:</div>
                                         <div class="col-md-5">
-                                            <input type="number" name="amount" id="" class="form-control">
+                                            <input type="number" name="amount" min="${Math.max(top_bidding_amount,auction.getMin_value())}" id="" class="form-control" required>
                                         </div>
                                         <div class="col-md-4">
                                             <button type="submit" class="btn btn-primary">Place a Bid</button>
@@ -64,6 +73,10 @@ if(request.getSession().getAttribute("user")==null)
                             </div>
                         </div>
                     </div>
+                    </c:if>
+                    <c:if test="${not auction.is_active }">
+                    	<h2>Auction Expired.</h2>
+                    </c:if>
                     <br>
                     <p>Your last Bid Value : ${last_bid_value}</p>
                 </div>

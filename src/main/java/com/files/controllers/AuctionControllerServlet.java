@@ -26,6 +26,7 @@ import java.util.Map;
 
 import com.files.models.Auction;
 import com.files.models.Bidding;
+import com.files.models.TopBidder;
 /**
  * Servlet implementation class AuctionControllerServlet
  */
@@ -58,6 +59,8 @@ public class AuctionControllerServlet extends HttpServlet {
 		switch(page) {
 			case "create_auction":createAuctionView(request,response);break; 
 			case "auction_history":auctionHistoryView(request,response);break; 
+			case "my_bids":myBidsView(request,response);break; 
+			case "set_auctions_closed":setAuctionsClosed(request,response);break;
 			case "update_auction":
 			try {
 				updateAuctionView(request,response);
@@ -70,6 +73,70 @@ public class AuctionControllerServlet extends HttpServlet {
 		}
 	}
 	
+
+	private void setAuctionsClosed(HttpServletRequest request, HttpServletResponse response) {
+		UtilFunctions utils=new UtilFunctions(dataSource);
+		try {
+			utils.setAuctionsClosed();
+		}
+		catch(Exception e) {
+			out.println(e);
+		}
+		
+	}
+
+	private void myBidsView(HttpServletRequest request, HttpServletResponse response) {
+		Connection conn=null;
+		PreparedStatement stmt=null;
+		ResultSet res=null;
+		if(checkUser(request,response)) return;
+		User user=(User)request.getSession().getAttribute("user");
+		UtilFunctions utils=new UtilFunctions(dataSource);
+		try {
+			conn=dataSource.getConnection();
+			String sql="select * from biddings where user_id=?;";
+			stmt=conn.prepareStatement(sql);
+			stmt.setLong(1,user.getId());
+			res=stmt.executeQuery();
+			Map<Integer,Auction> auctions=new HashMap<>();
+			Map<Integer,TopBidder> top_bidders=new HashMap<>();
+			ArrayList<Bidding> biddings=new ArrayList<>();
+			while(res.next()) {
+				biddings.add(new Bidding(res.getInt("id"),res.getInt("auction_id"),res.getInt("user_id"),res.getInt("amount")));
+				int auction_id=res.getInt("auction_id");
+				auctions.put(auction_id,utils.getAuction(auction_id));
+				top_bidders.put(auction_id,utils.getTopBidder(auction_id));
+			}
+			
+			request.setAttribute("auctions",auctions);
+			request.setAttribute("biddings",biddings);
+			request.setAttribute("top_bidders",top_bidders);
+			
+			RequestDispatcher dispatcher=request.getRequestDispatcher("my_bids.jsp");
+			dispatcher.forward(request,response);
+		}
+		catch(Exception e) {
+			out.println(e);
+			e.printStackTrace();
+		}
+		close(conn,stmt,res);
+		
+	}
+
+	private boolean checkUser(HttpServletRequest request, HttpServletResponse response) {
+		if(request.getSession().getAttribute("user")==null)
+		{
+			try {
+			RequestDispatcher dispatcher=request.getRequestDispatcher("login.jsp");
+			dispatcher.forward(request,response);
+			return true;}
+			catch(Exception e) {
+				out.println(e);
+				e.printStackTrace();
+			}
+		}
+		return false;
+	}
 
 	private void close(Connection conn, PreparedStatement stmt, ResultSet res) {
 		// TODO Auto-generated method stub

@@ -50,8 +50,9 @@ public class BidControllerServlet extends HttpServlet {
 		
 		
 		String command=request.getParameter("command");
+		if(command==null) command="";
 		switch(command) {
-			case "show_bid":showBidPage(request,response); break;
+			case "show_auction":showAuctionPage(request,response); break;
 			case "available_auctions":showAvailableAuctions(request,response);break;
 			default: showIndex(request,response);break;
 		}
@@ -70,7 +71,7 @@ public class BidControllerServlet extends HttpServlet {
 		
 	}
 
-	private void showBidPage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	private void showAuctionPage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		RequestDispatcher dispatcher=null;
 		if(request.getSession().getAttribute("user")==null) {
 			dispatcher=request.getRequestDispatcher("login.jsp");
@@ -80,6 +81,15 @@ public class BidControllerServlet extends HttpServlet {
 		Connection conn=null;
 		PreparedStatement stmt=null;
 		ResultSet res=null;
+		
+		//check if some Auctions Closed or not.
+		UtilFunctions utils=new UtilFunctions(dataSource);
+		try {
+			utils.setAuctionsClosed();
+		}
+		catch(Exception e) {
+			out.println(e);
+		}
 		try {
 			String id=request.getParameter("auction");
 			if(id.equals("")) {showAuctionsPage(request,response,"Auction not defined!"); return;}
@@ -89,7 +99,7 @@ public class BidControllerServlet extends HttpServlet {
 			stmt.setLong(1,Integer.parseInt(id));
 			res=stmt.executeQuery();
 			if(res.next()) {
-				Auction a=new Auction(res.getInt("id"),res.getInt("min_value"),res.getString("auction_name"),res.getString("item_name"),res.getString("start_timestamp"),res.getString("end_timestamp"),true);
+				Auction a=new Auction(res.getInt("id"),res.getInt("min_value"),res.getString("auction_name"),res.getString("item_name"),res.getString("start_timestamp"),res.getString("end_timestamp"),res.getBoolean("is_active"));
 				request.setAttribute("auction",a);
 				request.setAttribute("item_name",res.getString("item_name"));
 				Map<Integer,String> user_details=new HashMap<>();
@@ -239,8 +249,62 @@ public class BidControllerServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
+		if(request.getSession().getAttribute("user")==null) {
+			RequestDispatcher dispatcher=request.getRequestDispatcher("login.jsp");
+			dispatcher.forward(request,response);
+			return;
+		}
+		out=response.getWriter();
+		String command=request.getParameter("command");
+		switch(command) {
+			case "place_a_bid":palceABid(request,response);break;
+			default: showAuctionPage(request,response);break;
+		}
+	}
+
+	private void palceABid(HttpServletRequest request, HttpServletResponse response) {
+		Connection conn=null;
+		PreparedStatement stmt=null;
+		ResultSet res=null;
+		try {
+			User user=(User)request.getSession().getAttribute("user");
+			int amount=Integer.parseInt(request.getParameter("amount"));
+			String auction_id=request.getParameter("auction");
+			if(auction_id.equals("") || auction_id==null) 
+			{
+				request.setAttribute("error-msg","Auction Not Found!!");
+				showAuctionPage(request,response); return;
+			}
+			conn=dataSource.getConnection();
+			String sql="select * from biddings where user_id=? and auction_id=?";
+			stmt=conn.prepareStatement(sql);
+			stmt.setLong(1,user.getId());
+			stmt.setLong(2,Integer.parseInt(auction_id));
+			
+			res=stmt.executeQuery();
+			boolean update=false;
+			if(res.next()) {
+				sql="update biddings set amount=? where user_id=? and auction_id=?";
+				update=true;
+			}
+			else {
+				sql="insert into biddings(amount,user_id,auction_id) values(?,?,?)";
+			}
+			stmt=conn.prepareStatement(sql);
+			stmt.setLong(2,user.getId());
+			stmt.setLong(3,Integer.parseInt(auction_id));
+			stmt.setLong(1,amount);
+			if(update)
+			stmt.executeUpdate();
+			else stmt.execute();
+			request.setAttribute("success-msg","Bid Placed Successfully!!");
+			showAuctionPage(request,response);
+		}
+		catch(Exception e) {
+			out.println(e);
+			e.printStackTrace();
+		}
+		close(conn,stmt,res);
 	}
 
 }

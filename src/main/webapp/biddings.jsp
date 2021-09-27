@@ -7,11 +7,16 @@
 	//if(request.getSession().getAttribute("user")==null)
     //response.sendRedirect("login.jsp");
 %>
-    <main class="bg-secondary">
+    <main class="bg-secondary p-0 m-0">
     	
     	<p class="text-warning text-center">${warning==null?"":warning}</p>
     	
-        <div class="container py-4">
+        <div class="container p-10">
+        	<c:if test="${available_auctions.size()==0 && upcoming_auctions.size()==0 }">
+        	<div class="card2 my-2 p-2">
+        		<h3>No Auctions Found!</h3>
+        	</div>
+        	</c:if>
         	<c:if test="${available_auctions.size()>0 }">
             <div class="card2 my-2 p-2">
                 <h4 class="p-2">Available Auctions</h4>
@@ -25,18 +30,20 @@
                             <div class="card-body">
                             	<p class="fw-bold"><c:out value="${auction.auction_name }"/> : <br/> <i>for ${auction.item_name }</i></p>
                             	<hr>
-                            	<c:if test="${biddings_map.get(auction.getId()).size()>0 }">
+                            	<c:if test="${biddings_mapping.get(auction.getId()).size()>0 }">
                                 <p class="text-center fw-bold">Top Biddings</p>
-                                <ul>
-                                	<c:forEach items="${biddings_map.get(auction.getId())}" var="bid">
+                                <ul class="biddings-list">
+                                	<c:forEach items="${biddings_mapping.get(auction.getId())}" var="bid">
                                     <li>${users.get(bid.getUser_id()) } : Rs. ${bid.amount }</li>
                                     </c:forEach>
                                 </ul>
                                 </c:if>
+                                <p class="text-center">Ends in: <span class="countdown" data-countdown="${auction.end_timestamp }"></span></p>
                             </div>
                             <div class="card-footer d-flex justify-content-center">
                                 <a href="BidControllerServlet?command=show_bid&auction=${auction.id }" class="btn btn-sm btn-danger w-50">Bid</a>
                             </div>
+                            
                         </div>
                     </div>
 					</c:forEach>

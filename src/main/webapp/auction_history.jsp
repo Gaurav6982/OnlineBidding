@@ -59,7 +59,7 @@
 	                                            ${auction.auction_name }
 	                                        </div>
 	                                        <div class="auction_actions d-flex justify-content-end">
-	                                            <a href="" class="btn btn-warning btn-sm">View Details</a>
+	                                            <a href="BidControllerServlet?command=show_auction&auction=${auction.id }" class="btn btn-warning btn-sm">View Details</a>
 	                                        </div>
 	                                    </div>
 	                                </div>

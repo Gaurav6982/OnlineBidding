@@ -4,7 +4,10 @@
 body{
   font-family: 'Roboto', sans-serif;
 }
-* {
+.p-10{
+	padding:40px;
+}
+*,nav {
   margin: 0;
   padding: 0;
 }
@@ -36,6 +39,16 @@ body{
 }
 .text-disabled{
     opacity: 0.5;
+}
+.custom-table{
+	padding:10px;
+	border-radius:10px;
+}
+.custom-table th,td{
+	padding:5px 10px;
+}
+ul.biddings-list{
+	min-height:200px !important;
 }
 ul{
 	margin:0;

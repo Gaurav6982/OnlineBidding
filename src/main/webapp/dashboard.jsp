@@ -24,6 +24,10 @@
                         <a href="AuctionControllerServlet?page=auction_history" class="btn btn-warning h-100 w-100"><i class="fas fa-history dash-icon"></i></a>
                         <span class="text-center px-3">Auction History</span>
                       </div>
+                      <div class="big-btns">
+                        <a href="AuctionControllerServlet?page=my_bids" class="btn btn-secondary h-100 w-100"><i class="fas fa-money-check-alt dash-icon"></i></a>
+                        <span class="text-center px-3">Auction History</span>
+                      </div>
                     </div>
                   </div>
                 </div>

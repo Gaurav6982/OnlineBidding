@@ -3,6 +3,9 @@ package com.files.models;
 public class User {
 	private String name,email,password;
 	private int id;
+	public User() {
+		
+	}
 	public User( int id,String name, String email, String password) {
 		super();
 		this.name = name;
